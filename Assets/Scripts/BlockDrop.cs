@@ -8,6 +8,9 @@ public class BlockDrop : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // Every new block starts hanging
+        rb.gravityScale = 0;
     }
 
     void Update()
