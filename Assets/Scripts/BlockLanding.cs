@@ -45,7 +45,7 @@ public class BlockLanding : MonoBehaviour
 
         Debug.Log("Overlap %: " + overlapPercent);
 
-        // Perfect
+        // PERFECT
         if (overlapPercent >= 0.8f)
         {
             Debug.Log("Perfect!");
@@ -53,10 +53,17 @@ public class BlockLanding : MonoBehaviour
             GameManager.Instance.AddScore(100);
 
             PlaceBlock();
+            if (CompareTag("Roof"))
+{
+    GameManager.Instance.BuildingComplete();
+    return;
+}
+
+            GameManager.Instance.AddFloor();
 
             GameManager.Instance.SpawnNextBlock();
         }
-        // Good
+        // GOOD
         else if (overlapPercent >= 0.5f)
         {
             Debug.Log("Good!");
@@ -64,10 +71,17 @@ public class BlockLanding : MonoBehaviour
             GameManager.Instance.AddScore(50);
 
             PlaceBlock();
+            if (CompareTag("Roof"))
+{
+    GameManager.Instance.BuildingComplete();
+    return;
+}
+
+            GameManager.Instance.AddFloor();
 
             GameManager.Instance.SpawnNextBlock();
         }
-        // Miss
+        // MISS
         else
         {
             Debug.Log("Miss!");
@@ -83,16 +97,15 @@ public class BlockLanding : MonoBehaviour
         }
     }
 
-   private void PlaceBlock()
-{
-    Rigidbody2D rb = GetComponent<Rigidbody2D>();
+    private void PlaceBlock()
+    {
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
 
-    rb.linearVelocity = Vector2.zero;
-    rb.gravityScale = 0;
+        rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 0;
 
-    // Don't make it Static
-    rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.bodyType = RigidbodyType2D.Kinematic;
 
-    GameManager.Instance.SetLastPlacedBlock(gameObject);
-}
+        GameManager.Instance.SetLastPlacedBlock(gameObject);
+    }
 }
