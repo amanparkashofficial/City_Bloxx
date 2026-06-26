@@ -14,85 +14,69 @@ public class BlockLanding : MonoBehaviour
 
         landed = true;
 
-        SpriteRenderer currentRenderer =
-            GetComponent<SpriteRenderer>();
+        SpriteRenderer currentRenderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer belowRenderer = collision.gameObject.GetComponent<SpriteRenderer>();
 
-        SpriteRenderer belowRenderer =
-            collision.gameObject.GetComponent<SpriteRenderer>();
+        float currentWidth = currentRenderer.bounds.size.x;
+        float belowWidth = belowRenderer.bounds.size.x;
 
-        float currentWidth =
-            currentRenderer.bounds.size.x;
+        float left = Mathf.Max(
+            transform.position.x - currentWidth / 2,
+            collision.transform.position.x - belowWidth / 2);
 
-        float belowWidth =
-            belowRenderer.bounds.size.x;
-
-        float left =
-            Mathf.Max(
-                transform.position.x - currentWidth / 2,
-                collision.transform.position.x - belowWidth / 2
-            );
-
-        float right =
-            Mathf.Min(
-                transform.position.x + currentWidth / 2,
-                collision.transform.position.x + belowWidth / 2
-            );
+        float right = Mathf.Min(
+            transform.position.x + currentWidth / 2,
+            collision.transform.position.x + belowWidth / 2);
 
         float overlap = right - left;
+        float overlapPercent = overlap / currentWidth;
 
-        float overlapPercent =
-            overlap / currentWidth;
-
-        Debug.Log("Overlap %: " + overlapPercent);
+        Debug.Log("Overlap: " + overlapPercent);
 
         // PERFECT
         if (overlapPercent >= 0.8f)
         {
-            Debug.Log("Perfect!");
-
             GameManager.Instance.AddScore(100);
 
             PlaceBlock();
+
             if (CompareTag("Roof"))
-{
-    GameManager.Instance.BuildingComplete();
-    return;
-}
+            {
+                GameManager.Instance.BuildingComplete();
+                return;
+            }
 
             GameManager.Instance.AddFloor();
 
-            GameManager.Instance.SpawnNextBlock();
+            CraneController.Instance.PrepareNextBlock();
         }
         // GOOD
         else if (overlapPercent >= 0.5f)
         {
-            Debug.Log("Good!");
-
             GameManager.Instance.AddScore(50);
 
             PlaceBlock();
+
             if (CompareTag("Roof"))
-{
-    GameManager.Instance.BuildingComplete();
-    return;
-}
+            {
+                GameManager.Instance.BuildingComplete();
+                return;
+            }
 
             GameManager.Instance.AddFloor();
 
-            GameManager.Instance.SpawnNextBlock();
+            CraneController.Instance.PrepareNextBlock();
         }
         // MISS
         else
         {
-            Debug.Log("Miss!");
-
             GameManager.Instance.LoseLife();
 
             Destroy(gameObject);
 
             if (GameManager.Instance.lives > 0)
             {
-                GameManager.Instance.SpawnNextBlock();
+                CraneController.Instance.PrepareNextBlock();
             }
         }
     }
@@ -103,7 +87,6 @@ public class BlockLanding : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0;
-
         rb.bodyType = RigidbodyType2D.Kinematic;
 
         GameManager.Instance.SetLastPlacedBlock(gameObject);
